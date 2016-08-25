@@ -1,8 +1,10 @@
-import Tkinter
+from Tkinter import *
+from ttk import *
 from backend import backend
+import sys
+import glob
+import serial
 
-from Tkinter import Tk, Text, TOP, BOTH, X, N, LEFT
-from ttk import Frame, Label, Entry, Button
 
 class Example(Frame):
     def __init__(self, parent):
@@ -12,23 +14,64 @@ class Example(Frame):
         self.parent = parent
         self.initUI()
 
+    def connect(self):
+
+        self.con = backend(self.portvar.get())
+        self.console.insert(INSERT, "Connected to Board"+"\n")
+
     def update(self):
 
         bfreq = '{0:04b}'.format(int(self.inFrequency.get()))
+        print bfreq
         bvol = '{0:03b}'.format(int(self.inVoltage.get()))
-
-        self.console.insert('1.0','\n')
-        self.console.insert('1.0', backend(self.inPort.get()).update(bfreq, bvol))
-        #cannot run this without the board present
-
+        print bvol
+        self.console.insert(INSERT, bfreq +bvol+"p"+"\n")
+        self.console.insert(INSERT, self.con.update(bfreq, bvol)+"\n")
 
 
+    def serial_ports(self):
 
+        if sys.platform.startswith('win'):
+            ports = ['COM%s' % (i + 1) for i in range(256)]
+
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+            ports = glob.glob('/dev/tty[A-Za-z]*')
+
+        elif sys.platform.startswith('darwin'):
+            ports = glob.glob('/dev/tty.*')
+
+        else:
+            raise EnvironmentError('Unsupported platform')
+
+        result = []
+
+        for port in ports:
+
+            try:
+                s = serial.Serial(port)
+                s.close()
+                result.append(port)
+
+            except (OSError, serial.SerialException):
+                pass
+
+        return result
+
+    def clear(self):
+        self.inFrequency.insert(END,'0')
+        self.inVoltage.insert(END,'0')
+        self.update()
 
     def initUI(self):
 
         self.parent.title("Function Generator")
         self.pack(fill=BOTH, expand=True)
+
+        blank = Frame(self)
+        blank.pack(fill=X)
+
+        bblank = Label(blank, text="                ", width=20)
+        bblank.pack(side=LEFT, padx=5, pady=5)
 
         port = Frame(self)
         port.pack(fill=X)
@@ -36,13 +79,23 @@ class Example(Frame):
         cport = Label(port, text="Communication Port", width=20)
         cport.pack(side=LEFT, padx=5, pady=5)
 
-        self.inPort = Entry(port)
+        self.portvar = StringVar()
+        self.portvar.set("a")
+
+        mylist = list(self.serial_ports())
+        self.inPort = OptionMenu(port, self.portvar, "COM Port", *mylist)
         self.inPort.pack(fill=X, padx=2, expand=True)
+
+        connectFrame = Frame(self)
+        connectFrame.pack(fill=X)
+
+        connectButton = Button(connectFrame, text="Connect", command=lambda: self.connect())
+        connectButton.pack(side=RIGHT, padx=60, pady=5)
 
         freq = Frame(self)
         freq.pack(fill=X)
 
-        frequency = Label(freq, text="Frequency Hz (0 - 16)", width=20)
+        frequency = Label(freq, text="Frequency KHz (0 - 16)", width=20)
         frequency.pack(side=LEFT, padx=5, pady=5)
 
         self.inFrequency = Entry(freq)
@@ -51,25 +104,26 @@ class Example(Frame):
         vol = Frame(self)
         vol.pack(fill=X)
 
-        voltage = Label(vol, text="Voltage V (0 - 8)", width=20)
+        voltage = Label(vol, text="Voltage mV (0 - 8)", width=20)
         voltage.pack(side=LEFT, padx=5, pady=5)
-
 
         self.inVoltage = Entry(vol)
         self.inVoltage.pack(fill=X, padx=2, expand=True)
 
-
         up = Frame(self)
         up.pack(fill=X)
 
-        updateb = Button(self, text="Update", command=lambda : self.update())
-        updateb.pack(side=TOP, padx=5, pady=5)
+        updateb = Button(up, text="Update", command=lambda : self.update())
+        updateb.pack(side=LEFT, padx=60, pady=5)
+
+        clearb = Button(up, text="Zero", command=lambda : self.clear())
+        clearb.pack(side=RIGHT, padx=60, pady=5)
 
         conlab = Frame(self)
         conlab.pack(fill=X)
 
         conlable = Label(conlab, text="Console Output", width=11)
-        conlable.pack(side=TOP,padx=5, pady=5)
+        conlable.pack(padx=5, pady=5)
 
         con = Frame(self)
         con.pack(fill=BOTH, expand=True)
@@ -85,8 +139,9 @@ class Example(Frame):
 
 
 def main():
+
     root = Tk()
-    root.geometry("300x600+100+100") # hight, width, x, y
+    root.geometry("400x600+100+100") # hight, width, x, y
     app = Example(root)
     root.mainloop()
 

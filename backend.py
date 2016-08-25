@@ -1,12 +1,13 @@
-import serial as ser
+import serial
 from time import sleep
+
 
 
 class backend:
 
     def __init__(self, port):
 
-        mySerial = ser.Serial(str(port), 4800)
+        self. mySerial = serial.Serial(str(port), 4800)
 
         sleep(2)
 
@@ -14,7 +15,6 @@ class backend:
 
         self.mySerial.write(str(freq + vol + 'p'))
         sleep(2)
-
 
         return self.mySerial.readline()
 
