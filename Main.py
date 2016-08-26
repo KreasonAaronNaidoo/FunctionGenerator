@@ -21,12 +21,19 @@ class Example(Frame):
 
     def update(self):
 
-        bfreq = '{0:04b}'.format(int(self.inFrequency.get()))
+        bfreq = '{0:05b}'.format(int(self.inFrequency.get()))
+        self.inFrequency.delete(0, 'end')
         print bfreq
+
         bvol = '{0:03b}'.format(int(self.inVoltage.get()))
+        self.inVoltage.delete(0, 'end')
         print bvol
+
         self.console.insert(INSERT, bfreq +bvol+"p"+"\n")
         self.console.insert(INSERT, self.con.update(bfreq, bvol)+"\n")
+        self.console.see(END)
+
+
 
 
     def serial_ports(self):
