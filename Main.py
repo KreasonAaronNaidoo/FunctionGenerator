@@ -7,6 +7,8 @@ import serial
 
 
 class Example(Frame):
+
+
     def __init__(self, parent):
 
         Frame.__init__(self, parent)
@@ -14,27 +16,54 @@ class Example(Frame):
         self.parent = parent
         self.initUI()
 
+        self.connected = FALSE
+
     def connect(self):
 
         self.con = backend(self.portvar.get())
         self.console.insert(INSERT, "Connected to Board"+"\n")
+        self.connected = TRUE
 
     def update(self):
 
-        bfreq = '{0:05b}'.format(int(self.inFrequency.get()))
-        self.inFrequency.delete(0, 'end')
-        print bfreq
-
-        bvol = '{0:03b}'.format(int(self.inVoltage.get()))
-        self.inVoltage.delete(0, 'end')
-        print bvol
-
-        self.console.insert(INSERT, bfreq +bvol+"p"+"\n")
-        self.console.insert(INSERT, self.con.update(bfreq, bvol)+"\n")
-        self.console.see(END)
+        if (self.connected == TRUE):
 
 
+            freq = float(self.inFrequency.get())
+            vol = float(self.inVoltage.get())
 
+            if (freq < 30 and freq <= 25000 and vol >= 0 and vol <= 13): #zeroing the values
+
+                steps = (255.0/13.0)*vol
+
+                f_freq = str(int(round(freq))).zfill(5)
+                f_steps = str(int(round(steps))).zfill(3)
+
+
+
+                self.console.insert(INSERT, f_freq + f_steps +'p'+"\n")
+                self.console.insert(INSERT, self.con.update(f_freq, f_steps)+"\n")
+                self.console.see(END)
+
+            elif (freq >= 30 and freq <= 25000 and vol >+ 0 and vol <= 13):
+
+                steps = (255.0/13.0)*vol
+
+                f_freq = str(int(round(freq))).zfill(5)
+                f_steps = str(int(round(steps))).zfill(3)
+
+
+
+                self.console.insert(INSERT, f_freq + f_steps +'p'+"\n")
+                self.console.insert(INSERT, self.con.update(f_freq, f_steps)+"\n")
+                self.console.see(END)
+
+            else:
+                self.console.insert(INSERT, "Invalid Entry" + "\n")
+
+
+        else:
+            self.console.insert(INSERT, "Please connect to a COM  port" + "\n")
 
     def serial_ports(self):
 
@@ -65,9 +94,19 @@ class Example(Frame):
         return result
 
     def clear(self):
-        self.inFrequency.insert(END,'0')
-        self.inVoltage.insert(END,'0')
-        self.update()
+
+
+
+        if (self.connected == TRUE):
+            self.inFrequency.delete(0, END)
+            self.inFrequency.insert(END,'0')
+
+            self.inVoltage.delete(0, END)
+            self.inVoltage.insert(END,'0')
+
+            self.update()
+        else:
+            self.console.insert(INSERT, "Please connect to a COM  port" + "\n")
 
     def initUI(self):
 
@@ -102,7 +141,7 @@ class Example(Frame):
         freq = Frame(self)
         freq.pack(fill=X)
 
-        frequency = Label(freq, text="Frequency KHz (0 - 16)", width=20)
+        frequency = Label(freq, text="Frequency [30 - 25000] Hz", width=20)
         frequency.pack(side=LEFT, padx=5, pady=5)
 
         self.inFrequency = Entry(freq)
@@ -111,7 +150,7 @@ class Example(Frame):
         vol = Frame(self)
         vol.pack(fill=X)
 
-        voltage = Label(vol, text="Voltage mV (0 - 8)", width=20)
+        voltage = Label(vol, text="Voltage [0 - 13] V", width=20)
         voltage.pack(side=LEFT, padx=5, pady=5)
 
         self.inVoltage = Entry(vol)
