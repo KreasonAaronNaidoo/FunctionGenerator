@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6a62b5cf-4790-4fb3-969b-822475423a48" name="Default" comment="Fixed String Format&#10;Fixed Voltage input logic&#10;Added safety catches&#10;">
+    <list default="true" id="6a62b5cf-4790-4fb3-969b-822475423a48" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Main.py" afterPath="$PROJECT_DIR$/Main.py" />
     </list>
     <ignored path="FunctionGenerator.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -345,7 +344,14 @@
       <option name="project" value="LOCAL" />
       <updated>1472548316347</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Fixed String Format&#10;Fixed Voltage input logic&#10;Added safety catches&#10;">
+      <created>1472554427426</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1472554427426</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -385,7 +391,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="beta 2&#10;&#10;improved connection interface &#10;&#10;input figures do not match output figures on serial port&#10;check arduino sketch" />
     <MESSAGE value="Minor fix to bitstring, clear vars after each use" />
-    <option name="LAST_COMMIT_MESSAGE" value="Minor fix to bitstring, clear vars after each use" />
+    <MESSAGE value="Fixed String Format&#10;Fixed Voltage input logic&#10;Added safety catches&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed String Format&#10;Fixed Voltage input logic&#10;Added safety catches&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
